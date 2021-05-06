@@ -148,3 +148,25 @@ func (p *Model)Update(ship models.Spacecraft)[]error{
 	}
 	return errlist
 }
+
+func (p *Model)shipExists(name string)bool{
+	////TODO
+	return false ///for now
+}
+
+func (p *Model)Insert(ship models.Spacecraft)[]error{
+	if p.shipExists(ship.Name){
+		return []error{models.NewErrorAlreadyExists(ship.Name)}
+	}
+	res, err := p.ins.Exec(ship.Name, ship.Class, ship.Status, ship.Crew)
+	errorhandler.PanicOnErr(err)
+
+	shipid, err := res.LastInsertId()
+	errorhandler.PanicOnErr(err)
+	errlist := make([]error, 0)
+	for _, arm := range ship.Armourments {
+		err = p.arms.Insert(arm, shipid)
+		errlist = append(errlist, err)
+	}
+	return errlist
+}
