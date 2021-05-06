@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"if_inventory/errorhandler"
+	"if_inventory/models"
 	"if_inventory/models/spacecraft"
 	"net/http"
 	"strconv"
@@ -21,7 +22,8 @@ func NewSpacesrafts(db *sql.DB)*Spacecrafts{
 	}
 
 	http.HandleFunc("/find", spacecrafts.Find)
-	http.HandleFunc("/get", spacecrafts.Find)
+	http.HandleFunc("/get", spacecrafts.GetById)
+	http.HandleFunc("/create", spacecrafts.Insert)
 
 	return spacecrafts
 }
@@ -74,4 +76,39 @@ func (p *Spacecrafts)GetById(w http.ResponseWriter, req *http.Request){
 	errorhandler.PanicOnErr(err)
 
 	w.Write(jsondata)
+}
+
+func (p *Spacecrafts)InsertUpdate(w http.ResponseWriter, req *http.Request, isinsert bool) {
+	decoder := json.NewDecoder(req.Body)
+	spacecraft := models.Spacecraft{}
+
+	err := decoder.Decode(&spacecraft)
+	if err != nil{
+		http.Error(w, errorJson("Failed to parse json"), http.StatusBadRequest)
+		return
+	}
+	var errlist []error
+	if isinsert {
+		errlist = p.spacecraftmod.Insert(spacecraft)
+	}else{
+		errlist = p.spacecraftmod.Update(spacecraft)
+	}
+	if len(errlist) == 0{
+		w.Write([]byte(`{"success":true}`))
+		return
+	}
+	failures := map[string]interface{}{
+		"success": false,
+		"errors": errlist,
+	}
+	jsondata, err := json.Marshal(failures)
+	errorhandler.PanicOnErr(err)
+
+	w.Write(jsondata)
+}
+func (p *Spacecrafts)Insert(w http.ResponseWriter, req *http.Request) {
+	p.InsertUpdate(w, req, true)
+}
+func (p *Spacecrafts)Update(w http.ResponseWriter, req *http.Request) {
+	p.InsertUpdate(w, req, false)
 }

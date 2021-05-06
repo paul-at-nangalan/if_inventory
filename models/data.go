@@ -1,17 +1,17 @@
 package models
 
 type Armourments struct{
-	Id int64
-	Title string
-	Qty int64 /// in case its a deathstar
+	Id int64 `json:"id"`
+	Title string `json:"title"`
+	Qty int64 `json:"qty"`/// in case its a deathstar
 }
 
 type Spacecraft struct{
-	Id int64
-	Name string
-	Class string
-	Status string
-	Crew int32
+	Id int64 `json:"id"`
+	Name string `json:"name,omitempty"`
+	Class string `json:"class,omitempty"`
+	Status string `json:"status,omitempty"`
+	Crew int32 `json:"crew,omitempty"`
 
 	Armourments []Armourments
 }
