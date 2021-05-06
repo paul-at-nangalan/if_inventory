@@ -24,6 +24,7 @@ func NewSpacesrafts(db *sql.DB)*Spacecrafts{
 	http.HandleFunc("/find", spacecrafts.Find)
 	http.HandleFunc("/get", spacecrafts.GetById)
 	http.HandleFunc("/create", spacecrafts.Insert)
+	http.HandleFunc("/edit", spacecrafts.Update)
 
 	return spacecrafts
 }

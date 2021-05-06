@@ -12,4 +12,12 @@ func PanicOnErr(err error){
 	}
 }
 
+///must be called deferred
+func HandlePanic(){
+	if r := recover(); r != nil{
+		debug.PrintStack()
+		log.Println("PANIC: ", r)
+	}
+}
+
 

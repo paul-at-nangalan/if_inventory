@@ -143,6 +143,9 @@ func (p *Model)Update(ship models.Spacecraft)[]error{
 	}
 	errlist := make([]error, 0)
 	for _, arm := range ship.Armourments {
+		///each armourment should have a unique ID
+		/// and already be associated to the ship
+		/// therefore we don't need the ship ID
 		err = p.arms.Update(arm)
 		errlist = append(errlist, err)
 	}
@@ -161,6 +164,7 @@ func (p *Model)Insert(ship models.Spacecraft)[]error{
 	res, err := p.ins.Exec(ship.Name, ship.Class, ship.Status, ship.Crew)
 	errorhandler.PanicOnErr(err)
 
+	///Get the ship ID so we can insert the armourments
 	shipid, err := res.LastInsertId()
 	errorhandler.PanicOnErr(err)
 	errlist := make([]error, 0)
